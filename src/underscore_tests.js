@@ -13,71 +13,217 @@ var _ = { };
    * number of values--either an array or an object.
    */
 
+
   // Return an array of the first n elements of an array. If n is undefined,
   // return just the first element.
   _.first = function(array, n) {
+    var tempArr =[];
+    if (n > array.length) {
+      n = array.length;
+    }
+    if (n === undefined) {
+      return array[0];
+    }
+    if (n === 0) {
+      return [];
+    }
+    for (var i = 0; i < n; i++) {
+       tempArr[i] = array[i];
+    }
+    return tempArr;
   };
+
 
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
+    var tempArr =[];
+    if (n > array.length) {
+        return array;
+    }
+    if (n === undefined) {
+      return array[array.length -1];
+    }
+    if (n === 0) {
+      return [];
+    }
+    // so for [1,2,3] 2; need to assign array[1] to tempArr[0], and array[2] to tempArr[1]
+    for (var i = 0; i < n; i++) {
+      tempArr[i] = array[i + 1];
+    }
+    return tempArr;
   };
 
   // Call iterator(value, key, collection) for each element of collection.
   // Accepts both arrays and objects.
   _.each = function(collection, iterator) {
+    for (var key in collection) {
+      iterator(collection[key], key, collection);
+    }
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
   // is not present in the array.
   _.indexOf = function(array, target){
+    var result;
+      for (var i = 0; i < array.length; i++) {
+        if (target === array[i]) {
+           return result = i;
+        }else {
+          result = -1;
+        }
+      }
+      return result;
   };
 
   // Return all elements of an array that pass a truth test ('iterator' function argument)
   _.filter = function(collection, iterator) {
-  };
+    var resultArray = [];
+    for (var i = 0; i < collection.length; i++) {
+      if (iterator(collection[i])) {
+        resultArray.push(collection[i]);
+      }
+    }
+    return resultArray;
+    };
+
 
   // Return all elements of an array that don't pass a truth test (the 'iterator' function argument)
   _.reject = function(collection, iterator) {
+    var resultArray = [];
+    for (var i = 0; i < collection.length; i++) {
+      if (!iterator(collection[i])) {
+        resultArray.push(collection[i]);
+      }
+    }
+    return resultArray;
   };
 
-  // Produce a duplicate-free version of the array.
+  // Produce a duplicate-free version of the array. QQQQQ
   _.uniq = function(array) {
-  };
+
+      var resultArray = [];
+      var n = 1;
+      function isInArray(target) {
+        for (var j = 0; j < n; j++) {
+          if( resultArray.length > 0) {
+            n = resultArray.length;
+            }
+          if (target === resultArray[j]) {
+            return true;
+          }
+        }
+        return false;
+      }
+      for (var i = 0; i < array.length; i++) {
+        if (!isInArray(array[i]) ){
+          resultArray.push(array[i]);
+        }
+      }
+      return resultArray;
+
+    };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(array, iterator) {
+    for (var i = 0; i < array.length; i++) {
+      array[i] = iterator(array[i]);
+    }
+    return array;
   };
 
   // Takes an array of objects and returns and array of the values of
   // a certain property in it. E.g. take an array of people and return
-  // an array of just their ages
+  // an array of just their ages QQQQ
   _.pluck = function(array, propertyName) {
+    var result = [];
+    for (var i = 0; i < array.length; i++) {
+      result.push(array[i][propertyName]);
+    }
+    return result;
   };
 
   // Calls the method named by methodName on each value in the list.
   _.invoke = function(list, methodName, args) {
-  };
+    if (typeof methodName === "string") {
+      for (var i = 0; i < list.length; i++) {
+        list[i][methodName](args);
+      }
+      return list;
+    }
+    for (var j = 0; j < list.length; j++) {
+     methodName.call(list[j], args);
+   }
+
+   return list;
+ };
 
   // Reduces an array or object to a single value by repetitively calling
   // iterator(previousValue, item) for each item. previousValue should be
   // the return value of the previous iterator call.
   _.reduce = function(collection, iterator, initialValue) {
+	var result = initialValue;
+  if (initialValue === undefined) {
+    result = 0;
+  }
+    for (var key in collection) {
+     result =+ iterator(result, collection[key]);
+
+
+    }
+    return result;
   };
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
+    for (var key in collection) {
+      if (target === collection[key]) {
+        return true;
+      }
+    }
+    return false;
   };
 
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
+    if (iterator === undefined) {
+      iterator = function () {
+        if (collection[key]) {
+          return true;
+        }
+        return false;
+      }
+    };
+    for (var key in collection) {
+      if (!iterator(collection[key])) {
+        return false;
+      }
+    }
+    return true;
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
+    if (iterator === undefined) {
+      iterator = function () {
+        if (collection[key]) {
+          return true;
+        }
+        return false;
+      }
+    };
+    if (!iterator) {
+      iterator = function () {}
+    }
+    for (var key in collection) {
+      if(iterator(collection[key])) {
+        return true;
+      }
+    }
+    return false;
   };
 
 
@@ -91,11 +237,29 @@ var _ = { };
   // Extend a given object with all the properties of the passed in
   // object(s).
   _.extend = function(obj) {
+    var result = {};
+    for (var i = 0; i < arguments.length; i++) {
+      for (var key in arguments[i]) {
+          result[key] = arguments[i][key];
+
+      }
+    }
+    return result;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var result = {};
+    for (var i = 0; i < arguments.length; i++) {
+      for (var key in arguments[i]) {
+        if (result[key] === undefined) {
+          result[key] = arguments[i][key];
+        }
+
+      }
+    }
+    return result;
   };
 
 
@@ -107,6 +271,20 @@ var _ = { };
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
   _.once = function(func) {
+    var ran = 0;
+    var result;
+    return function () {
+      if (ran === 0) {
+        result = func();
+        ran = 1;
+        return result;
+      }else {
+        return result;
+      }
+
+
+    }
+
   };
 
   // Memoize an expensive function by storing its results. You may assume
@@ -115,7 +293,9 @@ var _ = { };
   // Memoize should return a function that when called, will check if it has
   // already computed the result for the given argument and return that value
   // instead if possible.
+  // going to use arguments, going to use closures
   _.memoize = function(func) {
+
   };
 
   // Delays a function for the given number of milliseconds, and then calls
